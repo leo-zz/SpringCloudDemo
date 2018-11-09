@@ -1,0 +1,77 @@
+spring:
+  profiles: peer1
+  application:
+   name: application-eurekaserver
+server:
+  port: 7001
+eureka:
+  instance:
+  #设置实例的hostname
+    hostname: 192.168.99.1 #eureka7001.com
+    instance-id: springcloud-eurekaserver-7001
+    #要求Client通过ip的方式进行注册
+    prefer-ip-address: true
+  client:
+    #不将eureka server 注册进来，会提示unavailable-replicas
+    #默认情况下，Eureka Server会向自己注册，这时需要配置eureka.client.registerWithEureka 和 eureka.client.fetchRegistry为false，防止自己注册自己。
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+    #defaultZone中填写的URL必须包括后缀/eureka，否则各eureka server之间不能通信
+    #defaultZone为默认的Zone，来源于AWS的概念。区域（Region）和可用区（Availability Zone,AZ）是AWS的另外两个概念。区域是指服务器所在的区域，
+    #比如北美洲、南美洲、欧洲和亚洲等，每个区域一般由多个可用区组成。 在本案例中defaultZone是指Eureka Server的注册地址。
+     defaultZone: http://192.168.56.1:7002/eureka,http://127.0.0.1:7003/eureka #eureka集群的时候使用
+#     defaultZone: http://eureka7002.com:7002/eureka,http://eureka7003.com:7003/eureka #eureka集群的时候使用
+      #http://${eureka.instance.hostname}:${server.port}/eureka/  #eureka单机模式的时候使用，指向自己。
+#  server:
+#     enable-self-preservation: false  #关闭自我保护机制
+#actuator
+management:
+  port: 7101  #配置了Actuator对外暴露REST API接口的端口号,如果不指定，端口为应用程序的启动端口，这样做的目的是将程序端口和程序的监控端口分开。
+  security:
+   enabled: false #Actuator 采取非安全验证方式,l.5x 版本默认开启了 Actuator 的安全验证。​
+---
+spring:
+  profiles: peer2
+  application:
+   name: application-eurekaserver
+server:
+  port: 7002
+eureka:
+  instance:
+   hostname: 192.168.56.1 #eureka7002.com
+   instance-id: springcloud-eurekaserver-7002
+   prefer-ip-address: true
+  client:
+   register-with-eureka: true
+   fetch-registry: true
+   service-url:
+     defaultZone: http://192.168.99.1:7001/eureka,http://127.0.0.1:7003/eureka #eureka集群的时候使用
+#     defaultZone: http://eureka7001.com:7001/eureka,http://eureka7003.com:7003/eureka #eureka集群的时候使用
+#actuator
+management:
+  port: 7102  #配置了Actuator对外暴露REST API接口的端口号,如果不指定，端口为应用程序的启动端口，这样做的目的是将程序端口和程序的监控端口分开。
+  security:
+   enabled: false #Actuator 采取非安全验证方式,l.5x 版本默认开启了 Actuator 的安全验证。
+---
+spring:
+  profiles: peer3
+  application:
+   name: application-eurekaserver
+server:
+  port: 7003
+eureka:
+  instance:
+   hostname: 127.0.0.1
+   instance-id: springcloud-eurekaserver-7003
+   prefer-ip-address: true
+  client:
+   register-with-eureka: true
+   fetch-registry: true
+   service-url:
+     defaultZone: http://192.168.99.1:7001/eureka,http://192.168.56.1:7002/eureka #eureka集群的时候使用
+#actuator
+management:
+  port: 7103  #配置了Actuator对外暴露REST API接口的端口号,如果不指定，端口为应用程序的启动端口，这样做的目的是将程序端口和程序的监控端口分开。
+  config:
+   enabled: false #Actuator 采取非安全验证方式,l.5x 版本默认开启了 Actuator 的安全验证。
