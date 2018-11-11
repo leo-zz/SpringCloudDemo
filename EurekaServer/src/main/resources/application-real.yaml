@@ -1,0 +1,48 @@
+#完全分布式部署的配置文件
+#将公共部分提取出来，比如端口号、实例名等配置
+spring:
+  application:
+   name: application-eurekaserver
+server:
+  port: 7001
+eureka:
+  instance:
+    #要求Client通过ip的方式进行注册
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+#actuator
+management:
+  #配置了Actuator对外暴露REST API接口的端口号,如果不指定，端口为应用程序的启动端口，这样做的目的是将程序端口和程序的监控端口分开。
+  port: 7101
+  #Actuator 采取非安全验证方式,l.5x 版本默认开启了 Actuator 的安全验证。​
+  security:
+   enabled: false
+---
+spring:
+  profiles: peer1
+eureka:
+  instance:
+    instance-id: springcloud-eurekaserver-A8-118
+  client:
+    service-url:
+      defaultZone: http://172.26.125.114:7001/eureka,http://172.26.125.115:7001/eureka
+---
+spring:
+  profiles: peer2
+eureka:
+  instance:
+    instance-id: springcloud-eurekaserver-A6-114
+  client:
+    service-url:
+      defaultZone: http://172.26.125.118:7001/eureka,http://172.26.125.115:7001/eureka
+---
+spring:
+  profiles: peer3
+eureka:
+  instance:
+    instance-id: springcloud-eurekaserver-A2-115
+  client:
+    service-url:
+      defaultZone: http://172.26.125.118:7001/eureka,http://172.26.125.114:7001/eureka
