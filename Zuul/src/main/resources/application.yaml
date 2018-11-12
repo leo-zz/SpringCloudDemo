@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: application-gatewayservice
+  profiles:
+    active: peer1
+
+#Zuul的配置
+zuul:
+  #通过zuul.prefix属性配置前缀，为所有请求添加统一的前缀，默认为空串，即不添加前缀。
+  #可以通过该属性实现API接口的版本号控制，注意前缀要以"/"开头，此处设置为"/v1"表示API接口为v1版本。
+  prefix: /v1
+  #如果某服务存在多个实例，Zuul结合Ribbon会做负载均衡，将请求均分的部分路由到不同的服务实例
+  #zuul.routes属性配置路由器的路由信息。
+  routes:
+    #路由的名称是用户自定义的，需要指定它的path和serviceld，二者规定了将指定规则的请求Url路由到指定的Serviceld
+    #符合/routea/** 规则的请求转发给微服务springcloud-serviceA
+    routeA:
+      path: /routea/**
+      serviceId: application-serviceA  #此处是spring的applicationname，即Eureka的服务名，而非instance-id 实例名。
+    #符合/routeb/** 规则的请求转发给微服务springcloud-serviceB
+    routeB:
+      path: /routeb/**
+      serviceId: application-serviceB
+#配置了Eureka Server集群的地址
+eureka:
+  client:
+    service-url:
+      defaultZone: http://172.26.125.114:7001/eureka,http://172.26.125.115:7001/eureka,http://172.26.125.118:7001/eureka
+---
+spring:
+  profiles: peer1
+server:
+  port: 7081
+
+#指明日志存放位置
+logging:
+  file: logs/application-gatewayservice-${server.port}.logs
+
+#Eureka实例名的配置
+eureka:
+  instance:
+    instance-id: springcloud-gatewayservice-7081
+
+#actuator的配置
+management:
+  port: 7181
+  security:
+    enabled: false
