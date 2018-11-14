@@ -3,7 +3,12 @@ spring:
     name: application-gatewayservice
   profiles:
     active: peer1
-
+#配置sleuth和zipkin-server的地址信息
+  zipkin:
+    base-url: http://172.26.125.118:7021/ #Zipkin Server的地址，测试时的配置，没有高可用
+  sleuth:
+    sampler:
+      percentage: 0.5 #以50%的概率将链路的数据上传给Zipkin Server
 #Zuul的配置
 zuul:
   #通过zuul.prefix属性配置前缀，为所有请求添加统一的前缀，默认为空串，即不添加前缀。
@@ -21,28 +26,49 @@ zuul:
     routeB:
       path: /routeb/**
       serviceId: application-serviceB
+
+#指明日志存放位置
+logging:
+  file: logs/application-gatewayservice-${server.port}.logs
+
 #配置了Eureka Server集群的地址
 eureka:
   client:
     service-url:
       defaultZone: http://172.26.125.114:7001/eureka,http://172.26.125.115:7001/eureka,http://172.26.125.118:7001/eureka
+
+
 ---
 spring:
   profiles: peer1
 server:
   port: 7081
 
-#指明日志存放位置
-logging:
-  file: logs/application-gatewayservice-${server.port}.logs
-
 #Eureka实例名的配置
 eureka:
   instance:
-    instance-id: springcloud-gatewayservice-7081
+    instance-id: springcloud-gatewayservice-A7-7081
 
 #actuator的配置
 management:
   port: 7181
   security:
     enabled: false
+
+---
+spring:
+  profiles: peer2
+server:
+  port: 7082
+
+#Eureka实例名的配置
+eureka:
+  instance:
+    instance-id: springcloud-gatewayservice-A7-7082
+
+#actuator的配置
+management:
+  port: 7182
+  security:
+    enabled: false
+
