@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 引入SpringBoot的默认配置文件defaults.xml -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>
+    <!-- 引入SpringBoot中内置的控制台输出配置文件console-appender.xml -->
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+    <!-- 引入自定义的文件输出配置文件logback-spring-file-level.xml -->
+    <include resource="logback-spring-file-level.xml" />
+
+    <!-- 设置root logger的级别为INFO，并将控制台输出和文件输出中的appender都添加到root logger下 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="INFO_FILE" />
+        <appender-ref ref="WARN_FILE" />
+        <appender-ref ref="ERROR_FILE" />
+    </root>
+    <jmxConfigurator/>
+</configuration>

@@ -1,0 +1,83 @@
+spring:
+  #添加3:设置springboot项目的应用名称，并默认启动peer1
+  application:
+    name: application-serviceA	#注意：此处的名称一定要个路由接入服务器中的配置名一致
+  #配置sleuth和zipkin-server的信息
+  zipkin:
+    base-url: http://172.26.125.118:7021/ #Zipkin Server的地址，本示例Zipkin部署在172.26.125.118中
+  sleuth:
+    sampler:
+      percentage: 0.5 #以50%的概率将链路的数据上传给Zipkin Server
+  profiles:
+      active: peer1
+  http:
+    multipart:
+      #上传文件总的最大值为30MB
+      max-request-size: 30MB
+      #单个文件的最大值为10MB
+      max-file-size: 10MB
+  #省略原有Springboot项目的数据源、redis、mybatis、分页等配置
+
+#添加4:eurekaSever的连接信息
+eureka:
+  client:
+    service-url:
+      defaultZone: http://172.26.125.114:7001/eureka,http://172.26.125.115:7001/eureka,http://172.26.125.118:7001/eureka
+  #向eureka注册Ip信息
+  instance:
+    prefer-ip-address: true
+
+#日志输出，指明日志存放位置；同时需要在资源路径下引入配置文件
+logging:
+  file: logs/application-idleGoodService-${server.port}.logs
+
+#添加5:增加peer1和peer2、peer3多个profiles的配置
+---
+spring:
+  profiles: peer1
+server:
+  port: 8881
+
+#Eureka实例名的配置
+eureka:
+  instance:
+    instance-id: application-serviceA-A2-8881
+
+#actuator的配置
+management:
+  port: 8811
+  security:
+    enabled: false
+
+---
+spring:
+  profiles: peer2
+server:
+  port: 8882
+
+#Eureka实例名的配置
+eureka:
+  instance:
+    instance-id: application-serviceA-A2-8882
+
+#actuator的配置
+management:
+  port: 8812
+  security:
+    enabled: false
+---
+spring:
+  profiles: peer3
+server:
+  port: 8883
+
+#Eureka实例名的配置
+eureka:
+  instance:
+    instance-id: application-serviceA-A2-8883
+
+#actuator的配置
+management:
+  port: 8813
+  security:
+    enabled: false
