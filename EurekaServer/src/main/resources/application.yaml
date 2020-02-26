@@ -15,6 +15,7 @@ eureka:
   client:
     #不将eureka server 注册进来，会提示unavailable-replicas
     #默认情况下，Eureka Server会向自己注册，这时需要配置eureka.client.registerWithEureka 和 eureka.client.fetchRegistry为false，防止自己注册自己。
+    #地下这两个值不应该是false么？
     register-with-eureka: true
     fetch-registry: true
     service-url:
